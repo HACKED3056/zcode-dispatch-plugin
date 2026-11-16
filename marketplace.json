@@ -1,0 +1,18 @@
+{
+  "name": "dev-default-aa05e249",
+  "plugins": [
+    {
+      "name": "dispatch",
+      "source": "./dispatch",
+      "version": "0.3.4",
+      "description": "Parallel model dispatch in agent-workflow mode: main agent commands, subagents execute and report back. Four tiers: Flash pool, FlashX speed batches, heavy workers, and dynamic workflows for any cross-provider model with reasoning-level control.",
+      "displayName": "Dispatch",
+      "displayName_i18n": {
+        "zh-CN": "并行调度"
+      },
+      "description_i18n": {
+        "zh-CN": "Agent 工作流模式：主 Agent 指挥、子 Agent 执行回传。四档通道：flash 群集、flashx 快速批、heavy 分身、动态工作流（跨路由任意模型+等级控制）；派发前先确认模型/等级/并发数"
+      }
+    }
+  ]
+}

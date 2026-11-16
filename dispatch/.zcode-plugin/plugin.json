@@ -1,0 +1,14 @@
+{
+  "name": "dispatch",
+  "version": "0.3.4",
+  "description": "Parallel model dispatch in agent-workflow mode: the main agent commands, subagents execute and report back. Tasks are scored on fragmentation/dependency/scale/difficulty to recommend a channel: Flash pool, FlashX speed batches, heavy workers, or dynamic workflows targeting any model (cross-provider) with per-subagent reasoning levels. Model/level/concurrency confirmed with the user before dispatch.",
+  "description_i18n": {
+    "en": "Parallel model dispatch in agent-workflow mode: main agent commands, subagents execute and report back. Tasks are scored on fragmentation/dependency/scale/difficulty to recommend one of four channels: Flash pool, FlashX speed batches, heavy workers, or dynamic workflows for any cross-provider model.",
+    "zh-CN": "并行模型调度（Agent 工作流模式）：主 Agent 指挥、子 Agent 执行回传。先按散乱度/依赖度/规模/思考难度四维评分推荐通道：flash 群集、flashx 快速批、heavy 分身、动态工作流（跨路由任意模型+等级控制）；派发前确认模型/等级/并发数。"
+  },
+  "author": { "name": "HACKED" },
+  "license": "MIT",
+  "agents": "agents",
+  "commands": "commands",
+  "skills": "skills"
+}
