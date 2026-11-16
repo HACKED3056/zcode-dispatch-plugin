@@ -2,7 +2,17 @@
 
 ZCode 并行模型调度插件：把「该不该并发、用哪个模型、开几路、结论可不可信」固化为可复用的调度纪律。
 
+> 主 Agent 只指挥，子 Agent 只干活——主上下文只进结论，不进过程噪音。
 
+## 快速开始
+
+```text
+1. 克隆本仓库 → ZCode 设置 → 插件市场 → 添加市场 → 本地目录 → 选仓库根目录 → 安装 Dispatch
+2. 新开会话（定义随会话启动加载，热改不生效）
+3. 说「并发处理这批文件」，或先跑 /dispatch:doctor 自检
+```
+
+装完说人话即可：**「并发把这 20 个文件翻译了」** → 四维评分推荐通道 → 向你确认模型与并发数 → 派发 → 回流汇总。
 
 ---
 
@@ -19,6 +29,7 @@ ZCode 并行模型调度插件：把「该不该并发、用哪个模型、开�
 - [设计决策](#设计决策)
 - [项目结构](#项目结构)
 - [已知限制](#已知限制)
+- [常见问题](#常见问题)
 - [贡献](#贡献)
 - [兼容性](#兼容性)
 - [版本历史](#版本历史)
@@ -287,6 +298,23 @@ zcode-dispatch-plugin/
 - **flashx 通道依赖中转站。** `new-provider` 不在列或被禁用时该通道不可用，doctor 检查项 4 报警。
 - **并发无硬上限。** 只有纪律建议值；硬闸仅工作流 `max_concurrency`。
 
+## 常见问题
+
+**每次派发前都要确认，不烦吗？**
+并发消耗真实额度，逐次确认是刻意的（D1）。嫌烦就点名：「用 flashx 4 路做 X」——点名即回答，跳过确认。
+
+**flashx 的结论能直接用吗？**
+关键结论（数字/事实/路径）不能直接采信，验收时会抽 1-2 条改派高档模型复核，不一致以复核为准（D3）。
+
+**改了插件文件 / AGENTS.md，为什么没生效？**
+代理定义与技能都是会话启动快照，新开会话才生效，当次会话救不了急。
+
+**派发报 `reasoning-level-missing`？**
+中转站代理的 agent 定义缺 `thoughtLevel:` 字段（D6），与 `model:` 并列补上即可。
+
+**怎么卸载？**
+ZCode 设置 → 插件管理 → 卸载，再删除本地市场条目。插件纯声明式、不写任何文件，无残留。
+
 ## 贡献
 
 见 [dispatch/MAINTENANCE.md](dispatch/MAINTENANCE.md)。核心要求：
@@ -299,9 +327,9 @@ zcode-dispatch-plugin/
 
 | 环境 | 状态 |
 | --- | --- |
-| ZCode（Agent 工具 + CreateWorkflow + AskUserQuestion） | 已验证 — Windows 11 / GLM-5.3 主会话 / bigmodel-api + new-provider 双 provider |
-| 单 provider 安装 | 可安装；flash / heavy 可用，通道分层意义有限 |
-| 无中转站 provider | flashx 通道不可用，doctor 检查项 4 报警 |
+| ZCode（Agent 工具 + CreateWorkflow + AskUserQuestion） | ✅ 已验证 — Windows 11 / GLM-5.3 主会话 / bigmodel-api + new-provider 双 provider |
+| 单 provider 安装 | ⚠️ 可安装；flash / heavy 可用，通道分层意义有限 |
+| 无中转站 provider | ⚠️ flashx 通道不可用，doctor 检查项 4 报警 |
 
 ## 版本历史
 
