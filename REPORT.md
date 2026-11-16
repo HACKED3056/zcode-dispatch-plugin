@@ -52,11 +52,11 @@
 
 字节级证据（源 vs 缓存）：`flashx-worker.md` **789 vs 734**、`SKILL.md` **7,487 vs 7,165**，其余一致。源码升级后未走「设置 → 插件管理 → 更新」，当前会话生效的仍是 0.3.3 快照。
 
-**修复**：UI 更新 → 删除缓存 `dev-default-aa05e249/dispatch/0.3.3/` 旧目录 → 新开会话 → `/dispatch:doctor` 六项全绿。
+**修复**：UI 更新 → 删除缓存下 `dispatch/0.3.3/` 旧版本目录 → 新开会话 → `/dispatch:doctor` 六项全绿。
 
 ### 4.2 机器绝对路径
 
-`doctor.md` 检查项 1/5 与 `MAINTENANCE.md` SOP 内嵌 `C:\Users\HACKED\...` 本机路径，跨机使用需按自身环境调整；插件功能本体不受影响。
+`doctor.md` 检查项 1/5 与 `MAINTENANCE.md` SOP 曾内嵌形如 `C:\Users\<用户名>\...` 的本机绝对路径与机器市场 ID（发布副本已通用化为 `~` 与占位符写法，本机源码仍为私有原版）。
 
 ### 4.3 外部依赖
 
@@ -100,7 +100,7 @@
 ## 7. 发布指引
 
 ```bash
-cd C:/Users/HACKED/Desktop/zcode-dispatch-plugin
+cd <本仓库路径>
 # 方式 A：gh CLI
 gh repo create zcode-dispatch-plugin --public --source=. --push
 # 方式 B：手动建仓

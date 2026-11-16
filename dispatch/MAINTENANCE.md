@@ -2,15 +2,15 @@
 
 ## 改动 SOP（正规路径，替代手改缓存）
 
-1. 改源码（本目录 `C:\Users\HACKED\.zcode\workspace\default\plugins\dispatch\`）；
+1. 改源码（本插件源码目录，通常为 `~/.zcode/workspace/<工作区名>/plugins/dispatch/`）；
 2. 升版本：`plugin.json` 与 `plugins/marketplace.json` 两处同步 +1（例 0.3.2 → 0.3.3；`installed_plugins.json` 的第三处由 UI 更新时自动写入，无需手改）；
 3. ZCode **设置 → 插件管理 → dispatch → 更新**：UI 会重新拷贝源码到缓存并正确写入 installed_plugins.json；
-4. 清理：删除缓存 `~/.zcode/cli/plugins/cache/dev-default-aa05e249/dispatch/` 下的旧版本目录（保留 installPath 指向的当前版本）；
+4. 清理：删除缓存 `~/.zcode/cli/plugins/cache/<市场ID>/dispatch/` 下的旧版本目录（保留 installPath 指向的当前版本）；
 5. **新开会话**生效（skill / 代理定义 / AGENTS.md 均为会话启动快照，当次会话不热更新）。
 
 ## 应急路径（仅当 UI 更新不可用）
 
-手动拷贝源码到 `~/.zcode/cli/plugins/cache/dev-default-aa05e249/dispatch/<新版本>/`，备份后手改 installed_plugins.json 的 `version` 与 `installPath` 两个字段。下次改动务必回归正规路径，避免版本漂移。
+手动拷贝源码到 `~/.zcode/cli/plugins/cache/<市场ID>/dispatch/<新版本>/`，备份后手改 installed_plugins.json 的 `version` 与 `installPath` 两个字段。下次改动务必回归正规路径，避免版本漂移。
 
 ## 自检
 
