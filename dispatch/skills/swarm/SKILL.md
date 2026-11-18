@@ -59,6 +59,7 @@ description: 并行调度多模型子代理的打法（Agent 工作流模式：�
 5. flashx 求速率、结论偏浅：影响决策的关键结论（数字/事实/路径）逐条过目，抽 1-2 条改派 flash 或 5.3 复核，不一致以复核为准并写进汇报。
 6. 并发建议：flash 3-6、flashx 4-8、heavy 2-4；未指定模型时走默认通道 flashx、取 4；动态工作流用 `max_concurrency` 限流。
 7. 失败处理：派发前确认被用户拒绝或取消 → 按改口方向执行，默认回主会话直接做，不擅自重问；子任务失败可改派同档或高档模型重试一次；连续失败升级用户定夺，不静默重试到成功为止。
+8. **确认硬闸（1.1.0 起，hook 强制）**：未经确认的 dispatch 档位派发（flashx/flash/heavy/magpie-* worker）会被 PreToolUse 钩子直接拦截（exit 2）。放行三途径——①先 AskUserQuestion（用户回答后 10 分钟窗内同批可派）；②用户当前消息已点名模型+并发数 → 派发 prompt 开头加 `[named]`；③应急关闸 `~/.zcode/dispatch/gate.json` 写 `{"enabled": false}`。被拦时按 stderr 指引走，不要反复硬闯。Explore/general-purpose 等非档位代理不经过此闸。
 
 ## 回收复核层（/collate）
 

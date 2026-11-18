@@ -19,7 +19,9 @@
 
 ## 已知平台约束（无法修复，只能规避）
 
-- **定义生效时序（2026-11-18 实测修正）**：agent 定义（`agents/*.md`）由类型注册表在**回合边界**重扫——写入后下一条消息生效，不必新开会话、同回合等待也无效；skill 与命令仍是会话启动快照，改动需**新开会话**生效。
+- **会话快照**：skill 与命令改动需新会话生效（agent 定义例外：回合边界重扫，下一条消息生效，不必新会话）。
+- **Agent 工具并发无硬上限**：只有纪律建议值（flash 3-6 / flashx 4-8 / heavy 2-4）；硬闸只有工作流的 `max_concurrency`。注意：1.1.0 起「派发前确认」已有 hook 硬闸（见 hooks/confirm-gate.mjs），但「并发数量」本身仍无运行时强制——模型确认后开多少路依旧靠纪律。
+- **硬闸运维**：确认标记 `~/.zcode/dispatch/confirm.json`（10 分钟窗）；应急关闸 `~/.zcode/dispatch/gate.json` 写 `{"enabled": false}`（删除该文件即恢复）；hook 执行记录看 ZCode 日志（outcome 含 blocked）。
 - **Agent 工具并发无硬上限**：只有纪律建议值（flash 3-6 / flashx 4-8 / heavy 2-4）；硬闸只有工作流的 `max_concurrency`。
 - **中转站代理**（new-provider 等）的 agent .md 必须写 `thoughtLevel:`；`$low` 后缀只在动态工作流 `subagent_model` 有效，agent 文件里无效。
 - **工作流子代理默认跑会话模型（贵）**：启动前必须按确认结果指定 `subagent_model`。

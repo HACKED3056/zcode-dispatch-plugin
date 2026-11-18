@@ -3,12 +3,25 @@
 > 格式：自 1.0.0 起按五个维度记录——**新功能 / 改进 / 修复错误 / 更新 / 文档**。某维度无内容时如实标注「无」，不凑条目。
 > 版本号惯例：裸版本号（无 `v` 前缀），与 plugin.json / marketplace.json 两处同步；`installed_plugins.json` 第三处由 UI 更新时自动写入。
 
-## Unreleased
+## 1.1.0 — 2026-11-18
+
+### 新功能
+- **确认硬闸（hooks 强制）**：把「派发前逐次确认」从 prompt 软纪律升级为硬执行——`PostToolUse(AskUserQuestion)` 记录用户已回答确认，`PreToolUse(Agent|Task)` 以 exit 2 **拦截**未经确认的 dispatch 档位派发。跳过确认不再被静默放过，而是显式失败并附放行指引。规则：10 分钟确认窗（同批并行派发共享一次确认）；点名豁免 = 派发 prompt 开头加 `[named]`；只拦 dispatch 档位类型（flashx/flash/heavy/magpie-* worker），**不误伤** Explore/general-purpose 等官方自主代理；应急关闸 `~/.zcode/dispatch/gate.json` 写 `{"enabled": false}`。六用例实测通过（无标记拦 / 点名豁免 / 窗内放行 / 过期拦 / 非档位放行 / 关闸放行）。
+
+### 改进
+- 派发失败语义：被闸拦截的 Agent 调用以工具错误返回，stderr 指引三条放行路径（先确认 / `[named]` / 关闸），模型可自纠而不必用户介入。
+
+### 修复错误
+- 无。
+
+### 更新
+- 版本 1.0.0 → **1.1.0**；manifest 新增 `hooks` 组件声明（`hooks/hooks.json`）。
+- hooks 随插件加载（会话快照）：更新插件后需**新开会话**硬闸才生效。
 
 ### 文档
-- README 重写：对齐开源项目惯用首页风格（居中 hero 一屏速览），深度内容拆分至 docs/DESIGN.md 与 docs/FAQ.md，内嵌源码一览删除（源码即仓库）。
-- 删除「插件源码一览」内嵌——源码即仓库 dispatch/ 目录，文档不再重复；版本历史并入本 CHANGELOG。
-- FAQ 修正生效时序表述（agent 定义回合边界生效 vs 技能/命令会话快照）并补 /route 与 subroute 关系说明。
+- SKILL 派发纪律新增第 8 条（硬闸规则与放行途径）；MAINTENANCE 平台约束修订——「确认」已有硬闸，但「并发数量」本身仍无运行时强制，并补硬闸运维（confirm.json / gate.json / 日志排查）。
+- README 首页化重构：正文对齐开源首页风格（居中 hero 一屏速览），深度内容拆分至 docs/DESIGN.md 与 docs/FAQ.md，删除「插件源码一览」内嵌，版本历史并入本 CHANGELOG；FAQ 修正生效时序表述并补 /route 与 subroute 关系。
+- docs/DESIGN.md 新增设计决策 **D8 · 确认硬闸**（背景：逐次必问概率性被跳过；被否决方案：纯软纪律无法根除、拦全部 Agent 会误伤官方自主代理）。
 
 ## 1.0.0 — 2026-11-18
 
@@ -29,8 +42,17 @@
 - agents/ 零新增定义（吸取双定义漂移教训），档位表仅引用现存类型，运行时以可用列表为准。
 
 ### 文档
-- 新建本 CHANGELOG.md（五维度格式，自 0.4.0 起）。
+- 新建本 CHANGELOG.md（五维度格式，自 1.0.0 起）。
 - 排障条两条按实测修正：①代理类型注册表**仅回合边界重扫**——写入定义同一回合派发必失败、同回合等待也无效（三次实测 + 探针写入后等 8 秒仍 not found 的对照实验定谳），标准流程改为「写入 → 告知下一条消息生效 → 下一回合派发」，不必新开会话；②子代理工具面常缺 ListModels，模型自证改为「可用则自证、不强求」。
-- MAINTENANCE.md：发布 SOP 补「同步更新 CHANGELOG.md」；平台约束条修正 agent 定义与 skill 的生效时序区分。
+- MAINTENANCE.md：发布 SOP 补「同步更新 CHANGELOG.md」；agent 定义与 skill 的生效时序区分修正。
 
 > 变更依据：合并 subroute 会话的执行记录；变更清单经两路 flashx 子代理独立核实（GitHub 惯例分析 + 本地源码逐项核对），8/8 属实，无清单遗漏。
+
+## 0.3.x — 历史记录（五维度格式之前）
+
+| 版本 | 变更 |
+| --- | --- |
+| 0.3.4 | 默认通道 flash → flashx（未指定模型默认 4 路）；确认政策收紧为逐次必问（点名即回答为唯一例外）；并发数选项改为区间 下限/中位/上限 三档，推荐下限（flash 3、flashx 4、heavy 2） |
+| 0.3.3 | 技能与确认流程基线 |
+
+> 变更依据：0.3.4 源码与 0.3.3 安装缓存的 `diff -r`（差异共三处：`flashx-worker.md`、`skills/swarm/SKILL.md`、版本号）。

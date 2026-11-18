@@ -159,6 +159,13 @@ Agent 并发  = 同一回复内多路派发，子任务互不依赖
 **决策**：给纪律建议区间 flash 3-6 / flashx 4-8 / heavy 2-4；唯一硬闸是工作流的 `max_concurrency`。
 **被否决方案**：插件内限流——无执行点，假装能修不如如实记录（见 MAINTENANCE.md 平台约束）。
 
+
+### D8 · 确认硬闸（1.1.0）
+
+**背景**：「逐次必问」是 prompt 级软纪律，概率性被主模型跳过——直接派发无人拦截。
+**决策**：PreToolUse(Agent|Task) 钩子 + exit 2 拦截**未确认的 dispatch 档位派发**；PostToolUse(AskUserQuestion) 写 10 分钟确认窗（同批共享）；点名豁免 = prompt 开头 `[named]`；应急关闸 gate.json。只拦档位类型，Explore/general-purpose 等官方自主代理不经过此闸。
+**被否决方案**：继续纯软纪律——概率性跳过无法根除；拦所有 Agent 调用——误伤官方自主派发（Explore 搜索等）。代价：hooks 是会话快照，更新插件后需新会话生效。
+
 ## 项目结构
 
 ```

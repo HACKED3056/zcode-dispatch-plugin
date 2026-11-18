@@ -1,0 +1,33 @@
+{
+  "description": "dispatch 确认硬闸：PostToolUse(AskUserQuestion) 记录用户已回答确认；PreToolUse(Agent|Task) 拦截未经确认的 dispatch 档位派发（exit 2）。只拦 dispatch 档位类型，不误伤 Explore/general-purpose。应急关闸：~/.zcode/dispatch/gate.json 写 {\"enabled\": false}。",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^AskUserQuestion$",
+        "hooks": [
+          {
+            "type": "process",
+            "command": "node",
+            "args": ["${ZCODE_PLUGIN_ROOT}/hooks/confirm-gate.mjs", "mark"],
+            "timeoutMs": 5000,
+            "statusMessage": "dispatch: 记录确认"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^(Agent|Task)$",
+        "hooks": [
+          {
+            "type": "process",
+            "command": "node",
+            "args": ["${ZCODE_PLUGIN_ROOT}/hooks/confirm-gate.mjs", "gate"],
+            "timeoutMs": 5000,
+            "statusMessage": "dispatch: 派发确认闸"
+          }
+        ]
+      }
+    ]
+  }
+}
