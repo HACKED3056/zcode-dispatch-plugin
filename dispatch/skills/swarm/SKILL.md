@@ -46,6 +46,8 @@ description: 并行调度多模型子代理的打法（Agent 工作流模式：�
 | 5.3 / 分身 / 高强度 / 深挖 | Agent 工具 `heavy-worker` | `bigmodel-api/GLM-5.3` |
 | 工作流 / 用 workflow；点名其他模型（5.2、5.1、任意套餐）；任务有依赖/循环/分阶段 | CreateWorkflow 动态工作流 | ListModels 任意 ID（可跨 provider），`subagent_model` 指定，可加 `$level`；`max_concurrency` 控并发 |
 
+**Explore 是模型盲区（2026-11-18 实测）**：`Explore` 是官方自主代理，固定跑自己的模型（本机为 GLM-5.3-Flash，且其定义缺 `thoughtLevel:` 会报 `reasoning-level-missing` 拒启），**主会话点名的模型对它无效**。规则：①用户点名了子代理模型/档位 → 用对应档位代理（如 `magpie-flashx-worker`），不用 Explore；②Explore 只用于未点名模型的常规检索摸底；③`reasoning-level-missing` 一报就要换路（同档重试或回主会话直做），连续硬闯属违规——失败处理见派发纪律第 7 条。
+
 判据：工作流吃的是**结构**不是**难度**——纯难无结构的推理题该给 heavy 分身，工作流帮不上忙。有结构上 Agent 并发会卡在主会话中转；无结构上工作流是白付启动成本。
 
 ## 动态工作流档位

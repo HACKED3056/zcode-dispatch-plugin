@@ -3,6 +3,17 @@
 > 格式：自 1.0.0 起按五个维度记录——**新功能 / 改进 / 修复错误 / 更新 / 文档**。某维度无内容时如实标注「无」，不凑条目。
 > 版本号惯例：裸版本号（无 `v` 前缀），与 plugin.json / marketplace.json 两处同步；`installed_plugins.json` 第三处由 UI 更新时自动写入。
 
+## 1.2.1 — 2026-11-18
+
+### 修复错误
+- **Explore 模型盲区**（用户实测报障：点名 magpie-flashx 却被派 Explore 跑成 bigmodel/GLM-5.3-Flash 且报 reasoning-level-missing）：Explore 是官方自主代理、固定跑自带模型，主会话点名对它无效。SKILL 新增规则——点名了子代理模型/档位时用对应档位代理不用 Explore；Explore 仅用于未点名的检索摸底；reasoning-level-missing 一报即换路，禁止硬闯。
+
+### 更新
+- 版本 1.2.0 → **1.2.1**。
+
+### 文档
+- swarm SKILL「按点名选通道」表新增「Explore 是模型盲区」段。
+
 ## 1.2.0 — 2026-11-18
 
 ### 新功能
