@@ -3,6 +3,13 @@
 > 格式：自 1.0.0 起按五个维度记录——**新功能 / 改进 / 修复错误 / 更新 / 文档**。某维度无内容时如实标注「无」，不凑条目。
 > 版本号惯例：裸版本号（无 `v` 前缀），与 plugin.json / marketplace.json 两处同步；`installed_plugins.json` 第三处由 UI 更新时自动写入。
 
+## Unreleased
+
+### 文档
+- README 重写：对齐开源项目惯用首页风格（居中 hero 一屏速览），深度内容拆分至 docs/DESIGN.md 与 docs/FAQ.md，内嵌源码一览删除（源码即仓库）。
+- 删除「插件源码一览」内嵌——源码即仓库 dispatch/ 目录，文档不再重复；版本历史并入本 CHANGELOG。
+- FAQ 修正生效时序表述（agent 定义回合边界生效 vs 技能/命令会话快照）并补 /route 与 subroute 关系说明。
+
 ## 1.0.0 — 2026-11-18
 
 ### 新功能
