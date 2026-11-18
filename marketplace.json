@@ -4,14 +4,14 @@
     {
       "name": "dispatch",
       "source": "./dispatch",
-      "version": "0.3.4",
-      "description": "Parallel model dispatch in agent-workflow mode: main agent commands, subagents execute and report back. Four tiers: Flash pool, FlashX speed batches, heavy workers, and dynamic workflows for any cross-provider model with reasoning-level control.",
+      "version": "1.0.0",
+      "description": "Parallel model dispatch, route preference and cluster collation: four-dimension scoring recommends a channel (FlashX batches / Flash pool / heavy doubles / dynamic workflows), /route records the tier preference as the confirm-question default, /collate runs the evidence-graded collation pipeline with a ledger.",
       "displayName": "Dispatch",
       "displayName_i18n": {
         "zh-CN": "并行调度"
       },
       "description_i18n": {
-        "zh-CN": "Agent 工作流模式：主 Agent 指挥、子 Agent 执行回传。四档通道：flash 群集、flashx 快速批、heavy 分身、动态工作流（跨路由任意模型+等级控制）；派发前先确认模型/等级/并发数"
+        "zh-CN": "并行调度 + 路由偏好 + 群集复核：主 Agent 指挥、子 Agent 执行回传；四维评分推荐通道（flashx 快速批 / flash 群集 / heavy 分身 / 动态工作流跨路由任意模型+等级控制）；/route 记录档位偏好作确认问默认推荐项（点名即回答，偏好不免问）；/collate 群集报告分级复核流水线（双轨互证、P0/P1 全查、flashx P2 抽查≥30%、账本沉淀）。派发前确认模型/等级/并发数。"
       }
     }
   ]
