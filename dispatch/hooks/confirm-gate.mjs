@@ -13,7 +13,8 @@ const CONFIRM_FILE = path.join(DATA_DIR, 'confirm.json')
 const GATE_FILE = path.join(DATA_DIR, 'gate.json')
 // 一次确认管 10 分钟窗口：同批并行派发共享一次确认，符合「逐次必问」的批次语义
 const WINDOW_MS = 10 * 60 * 1000
-// 只拦 dispatch 档位类型；Explore / general-purpose 等官方或野生代理不误伤
+// 只拦 dispatch 档位类型；Explore / general-purpose 等官方或野生代理不误伤。
+// 命名空间前缀（如 dispatch:flashx-worker）先归一化再比对（1.3.0 修复：宿主不归一化，实弹曾绕闸）
 const GATED_TYPES = new Set([
   'flashx-worker', 'flash-worker', 'heavy-worker',
   'magpie-flash-worker', 'magpie-flashx-worker', 'magpie-heavy-worker',
@@ -40,6 +41,25 @@ let input = {}
 try { input = JSON.parse(raw) } catch {}
 
 if (mode === 'mark') {
+  // 1.3.0 起主题过滤：仅派发确认类问题（模型/档位/并发等要素）落标记；questions 缺失时防御性照写
+  const ti = input.tool_input ?? input.toolInput
+  const questions = ti && typeof ti === 'object' ? ti.questions : undefined
+  const parseable = Array.isArray(questions) && questions.length > 0
+  if (parseable) {
+    let text = ''
+    for (const q of questions) {
+      if (!q || typeof q !== 'object') continue
+      text += ' ' + String(q.question ?? '')
+      if (Array.isArray(q.options)) {
+        for (const o of q.options) {
+          if (o && typeof o === 'object') text += ' ' + String(o.label ?? '') + ' ' + String(o.description ?? '')
+        }
+      }
+    }
+    if (!/模型|档位|通道|并发|派发|路数|工作流|workflow|flashx|flash|heavy|magpie/i.test(text)) {
+      process.exit(0) // 无关问题：不开派发窗
+    }
+  }
   try {
     fs.mkdirSync(DATA_DIR, { recursive: true })
     fs.writeFileSync(CONFIRM_FILE, JSON.stringify({ confirmedAt: Date.now() }) + '\n', 'utf8')
@@ -55,7 +75,8 @@ const toolInput = input.tool_input ?? input.toolInput ?? {}
 const subagentType = String(toolInput.subagent_type ?? toolInput.subagentType ?? '')
 const prompt = String(toolInput.prompt ?? '')
 
-if (!GATED_TYPES.has(subagentType)) process.exit(0) // 非 dispatch 档位：不管
+const bareType = subagentType.replace(/^.*:/, '')
+if (!GATED_TYPES.has(bareType)) process.exit(0) // 非 dispatch 档位：不管
 if (/\[\s*(named|点名)\s*\]/i.test(prompt.slice(0, 160))) process.exit(0) // 点名豁免标记
 
 const confirm = readJson(CONFIRM_FILE)

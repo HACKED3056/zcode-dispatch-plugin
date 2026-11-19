@@ -187,3 +187,10 @@ zcode-dispatch-plugin/
 ```
 
 > 源码即仓库 `dispatch/` 目录本身，不再在文档内重复内嵌（1.0.0 前的 README 曾内嵌全部 8 个源码文件，已删）。
+
+### D9 · 硬闸边界补全（1.3.0）
+
+**背景**：1.2.x 审计三项实锤——①命名空间 subagent_type（dispatch:flashx-worker）不在 GATED_TYPES，实弹绕闸；②mark 挂任意 AskUserQuestion，无关问题也开 10 分钟派发窗；③CreateWorkflow 不经闸但文档未言明。
+**决策**：gate 先做命名空间归一化（`replace(/^.*:/,'')`）再比对；mark 增主题过滤（问题须含模型/档位/并发等要素才落标记，questions 缺失时防御性照写）；工作流档明示豁免（其确认由脚本→类型检查→用户确认流程自身承担）。
+**教训（双源码树）**：push-repo 发布仓与装机源曾各自演化——1.1.0 的 README/docs 变更只落在发布仓。自此 workspace 插件源为唯一事实源，发布仓由发布流程从本目录生成，禁止双边编辑。
+**被否决方案**：matcher 直接加 CreateWorkflow——闸无法校验工作流脚本内容，拦则误伤正规流程；mark 精确绑定问题-派发对——hook 层拿不到关联凭证，做不到干净的绑定。

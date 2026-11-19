@@ -38,11 +38,11 @@ argument-hint: "[flashx|flash|heavy|magpie-5.3|magpie-flashx|workflow:<模型ID>
 3. 附一行提醒：偏好只是**默认推荐项**，每次派发前的确认问不免除。
 
 ### B. 参数为 `off` —— 清除偏好
-把**工作区** `.zcode/subroute.json` 的 `preferredTier`/`concurrency` 置 null（保留文件）；若用户明说「全局也清」，同步把全局层置 off。回复「已清除，后续派发按全局默认推荐（flashx 优先）」。
+把**工作区** `.zcode/subroute.json` 的 `preferredTier`/`concurrency` 置 null（保留文件）；若用户明说「全局也清」，同步把全局层置 off。回复实际剩余生效层：读全局 `~/.zcode/subroute/state.json`，有偏好则报其 preferredTier（注明来源：全局层），无则报默认推荐档 flashx。
 
 ### C. 参数为 `<档位> [并发数]` —— 设置（核心路径）
 1. 解析档位；非法值 → 列出合法档位表，不猜。
-2. 若给并发数：必须是 1–12 的整数；缺省保持原值或用档位惯例（flashx 4–6 / flash 3–4 / heavy 2–3）。
+2. 若给并发数：必须是 1–12 的整数；缺省保持原值或用档位惯例（flash 3-6、flashx 4-8、heavy 2-4；推荐下限：flash 3、flashx 4、heavy 2）。
 3. **验证可用性**：该档位 agent 类型在可用列表中（或 workflow: 时 CreateWorkflow 可加载）；不可用 → 按上方纪律处理，终止。
 4. Write **工作区**状态文件 `.zcode/subroute.json`（工作区根目录）：
 

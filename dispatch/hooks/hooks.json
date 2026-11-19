@@ -1,5 +1,5 @@
 {
-  "description": "dispatch 确认硬闸：PostToolUse(AskUserQuestion) 记录用户已回答确认；PreToolUse(Agent|Task) 拦截未经确认的 dispatch 档位派发（exit 2）。只拦 dispatch 档位类型，不误伤 Explore/general-purpose。应急关闸：~/.zcode/dispatch/gate.json 写 {\"enabled\": false}。",
+  "description": "dispatch 确认硬闸：PostToolUse(AskUserQuestion) 记录用户已回答的**派发确认类**问题（1.3.0 起主题过滤：问题须含模型/档位/并发等要素才落标记）；PreToolUse(Agent|Task) 拦截未经确认的 dispatch 档位派发（exit 2），subagent_type 先做命名空间归一化再比对。只拦 dispatch 档位类型，不误伤 Explore/general-purpose。工作流档（CreateWorkflow）明示豁免。应急关闸：~/.zcode/dispatch/gate.json 写 {\"enabled\": false}。",
   "hooks": {
     "PostToolUse": [
       {
