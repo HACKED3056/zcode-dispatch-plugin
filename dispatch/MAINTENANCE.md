@@ -15,7 +15,7 @@
 
 ## 自检
 
-- `/dispatch:doctor` —— 六项体检：缓存一致性 / 版本一致 / thoughtLevel 完整 / 模型在列 / 指向有效 / 触发词在位。
+- `/dispatch:doctor` —— 七项体检：缓存一致性 / 版本一致 / thoughtLevel 完整 / 模型在列 / 指向有效 / 触发词在位 / 外部依赖与残留。
 - 派发验证：让子代理调 ListModels，看 `[current]` 是否等于点名的 provider/modelId。
 
 ## 已知平台约束（无法修复，只能规避）

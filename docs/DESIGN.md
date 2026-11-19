@@ -10,7 +10,7 @@ ZCode 提供多档模型（重思考 GLM-5.3、均衡 GLM-5.3-Flash、极速 GLM
 2. **上下文单向污染。** 子代理的过程输出（读文件、跑命令、试错）若全量回流，主上下文被原始转储挤占，长任务后期质量下降。
 3. **验收无纪律。** 快模型的结论偏浅、失败被静默重试、任务越拆越发散，没有统一的复核与收敛规则。
 
-本插件以纯声明式文件（2 个代理定义、6 个命令、1 个技能）把上述决策固化为「评分 → 确认 → 派发 → 回流 → 总装」流程。目标读者：配置了多个 provider、需要在 ZCode 中做受控并发的用户。
+本插件以声明式文件为主（2 个代理定义、6 个命令、1 个技能）加一个确认闸钩子（hooks/confirm-gate.mjs，见 D8）把上述决策固化为「评分 → 确认 → 派发 → 回流 → 总装」流程。目标读者：配置了多个 provider、需要在 ZCode 中做受控并发的用户。
 
 ## 核心概念
 
@@ -55,9 +55,9 @@ Agent 并发  = 同一回复内多路派发，子任务互不依赖
 
 | 触发方式 | subagent_type | 模型 | 默认并发（区间） | 回退 |
 | --- | --- | --- | --- | --- |
-| 默认并发 / flashx / 快速完成 / 速度优先 / 大批量 | `flashx-worker` | `new-provider/glm-5.3-flashx`（thoughtLevel low） | 4（4-8） | 无；缺失时提示检查，不静默降级 |
-| flash / 要更稳结论的操作并发 | `flash-worker` | `bigmodel-api/GLM-5.3-Flash` | 3（3-6） | `general-purpose`（已被 agents-state.json 固定为同模型） |
-| 5.3 / 分身 / 高强度深挖 | `heavy-worker` | `bigmodel-api/GLM-5.3` | 2-4 | 无 |
+| 默认并发 / flashx / 快速完成 / 速度优先 / 大批量 | `flashx-worker` | `magpie/auto/glm-5.3-flashx`（thoughtLevel high） | 4（4-8） | 无；缺失时提示检查，不静默降级 |
+| flash / 要更稳结论的操作并发 | `flash-worker` | `magpie/auto/glm-5.3-flash` | 3（3-6） | `general-purpose`（已被 agents-state.json 固定为同模型） |
+| 5.3 / 分身 / 高强度深挖 | `heavy-worker` | `magpie/auto/glm-5.3` | 2-4 | 无 |
 | 工作流；点名其他模型；任务有依赖/循环/分阶段 | CreateWorkflow | 任意 ListModels ID（`subagent_model` 指定） | `max_concurrency` 硬限 | — |
 
 任务画像 → 通道：
@@ -111,11 +111,11 @@ Agent 并发  = 同一回复内多路派发，子任务互不依赖
 
 ### 声明式集成
 
-`plugin.json` 仅映射 `agents/`、`commands/`、`skills/` 三个目录：零脚本、零 hooks、零 MCP、零运行时依赖。定义随会话启动加载为快照（agent 定义在回合边界重扫，技能/命令需新会话）。
+`plugin.json` 声明 `agents/`、`commands/`、`skills/`、`hooks/` 四个组件：零 MCP、零独立运行时，唯一可执行脚本是确认闸钩子 `confirm-gate.mjs`（见 D8/D9）。定义随会话启动加载为快照（agent 定义在回合边界重扫，技能/命令需新会话）。
 
 ## 设计决策
 
-七条核心决策，按 背景 → 决策 → 被否决方案 组织；标注版本号的为该版本的变更项。
+九条核心决策，按 背景 → 决策 → 被否决方案 组织；标注版本号的为该版本的变更项。
 
 ### D1 · 派发前逐次确认，点名即视为回答
 
@@ -126,7 +126,7 @@ Agent 并发  = 同一回复内多路派发，子任务互不依赖
 ### D2 · 默认通道 flashx，flash 保留给点名场景
 
 **背景**：高频场景是「大批量、轻推理、求速率」的操作型并发，对单位成本与延迟敏感。
-**决策**：未点名模型时派 flashx（基元律动 TokenRhythm，thoughtLevel low），默认 4 路；flash（默认 3 路）仅在点名或要求更稳结论时使用。
+**决策**：未点名模型时派 flashx（1.3.4 起 magpie 中转，thoughtLevel high），默认 4 路；flash（默认 3 路）仅在点名或要求更稳结论时使用。
 **被否决方案**：flash 作默认通道（0.3.3 行为）——成本与延迟偏高，与高频场景不匹配，0.3.4 对调。
 
 ### D3 · flashx 关键结论强制交叉复核
@@ -155,7 +155,7 @@ Agent 并发  = 同一回复内多路派发，子任务互不依赖
 
 ### D7 · 并发不限流，只给纪律区间
 
-**背景**：Agent 工具没有并发硬上限，纯声明式插件没有运行时强制点。
+**背景**：Agent 工具没有并发硬上限；声明式组件无运行时强制点，确认闸（1.1.0）只管确认、不管并发数。
 **决策**：给纪律建议区间 flash 3-6 / flashx 4-8 / heavy 2-4；唯一硬闸是工作流的 `max_concurrency`。
 **被否决方案**：插件内限流——无执行点，假装能修不如如实记录（见 MAINTENANCE.md 平台约束）。
 
@@ -163,7 +163,7 @@ Agent 并发  = 同一回复内多路派发，子任务互不依赖
 ### D8 · 确认硬闸（1.1.0）
 
 **背景**：「逐次必问」是 prompt 级软纪律，概率性被主模型跳过——直接派发无人拦截。
-**决策**：PreToolUse(Agent|Task) 钩子 + exit 2 拦截**未确认的 dispatch 档位派发**；PostToolUse(AskUserQuestion) 写 10 分钟确认窗（同批共享）；点名豁免 = prompt 开头 `[named]`；应急关闸 gate.json。只拦档位类型，Explore/general-purpose 等官方自主代理不经过此闸。
+**决策**：PreToolUse(Agent|Task) 钩子 + exit 2 拦截**未确认的 dispatch 档位派发**；PostToolUse(AskUserQuestion) 写 10 分钟确认窗（同批共享）；点名豁免 = prompt 开头 `[named]`；应急关闸 gate.json。只拦档位类型，Explore/general-purpose 等官方自主代理不经过此闸。信任边界（第四轮审计成文）：闸防「忘了问」与未确认派发，不防拥有文件写权限的敌意模型——后者可直接写 gate.json/confirm.json 或伪造 `[named]` 自我豁免（见派发纪律第 8 条）；应急关闸仅应由用户手动操作。
 **被否决方案**：继续纯软纪律——概率性跳过无法根除；拦所有 Agent 调用——误伤官方自主派发（Explore 搜索等）。代价：hooks 是会话快照，更新插件后需新会话生效。
 
 ## 项目结构
@@ -180,6 +180,7 @@ zcode-dispatch-plugin/
     ├── .zcode-plugin/plugin.json
     ├── agents/             flashx-worker / heavy-worker
     ├── commands/           flash / flashx / heavy / route / collate / doctor
+    ├── hooks/              confirm-gate.mjs + hooks.json（确认硬闸，1.1.0 起）
     ├── skills/swarm/       评分·路由·纪律·排障
     ├── README.md           插件内使用说明
     ├── CHANGELOG.md        版本历史（五维度）

@@ -16,10 +16,10 @@
 
 | 你说 | 通道 | 子代理模型 |
 |---|---|---|
-| 「并发 / 并行 / 分工 / 群集 / 多个AI同时干活」等未点名触发 | 四维评分 + **flashx 默认推荐** | `new-provider/glm-5.3-flashx` |
-| 「flash / 要更稳结论」 | `flash-worker` | `bigmodel-api/GLM-5.3-Flash` |
-| 「5.3 / 分身 / 高强度深挖」 | `heavy-worker` | `bigmodel-api/GLM-5.3` |
-| 「工作流」或点名其他模型（5.2 / 5.1 等） | CreateWorkflow | ListModels 任意 ID |
+| 「并发 / 并行 / 分工 / 群集 / 多个AI同时干活」等未点名触发 | 四维评分 + **flashx 默认推荐** | `magpie/auto/glm-5.3-flashx` |
+| 「flash / 要更稳结论」 | `flash-worker` | `magpie/auto/glm-5.3-flash` |
+| 「5.3 / 分身 / 高强度深挖」 | `heavy-worker` | `magpie/auto/glm-5.3` |
+| 「工作流」或点名其他模型（ListModels 在列者） | CreateWorkflow | ListModels 任意 ID |
 
 **结构评估（四维评分）**：散乱度 / 依赖度 / 规模 / 思考难度——有结构→动态工作流；**散乱独立操作型→flashx 并发（默认通道）**；纯难无结构→heavy 分身；都低→主会话直接做。派发确认是「专家建议式」：判断先行，四维结论 + 推荐档 × 路数 + 一句理由（1.2.0 起）。
 
