@@ -3,6 +3,11 @@
 > 格式：自 1.0.0 起按五个维度记录——**新功能 / 改进 / 修复错误 / 更新 / 文档**。某维度无内容时如实标注「无」，不凑条目。
 > 版本号惯例：裸版本号（无 `v` 前缀），与 plugin.json / marketplace.json 两处同步；`installed_plugins.json` 第三处由 UI 更新时自动写入。
 
+## 1.3.1 — 2026-11-19
+
+### 修复错误
+- 修复 agents/heavy-worker.md 缺失 thoughtLevel 字段（补 thoughtLevel: high，避免『未选择思考档位』及默认档位错误）。
+
 ## 1.3.0 — 2026-11-19
 
 ### 新功能

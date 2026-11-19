@@ -1,6 +1,6 @@
 {
   "name": "dispatch",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Parallel model dispatch, route preference and cluster collation: four-dimension scoring recommends a channel (FlashX batches / Flash pool / heavy doubles / dynamic workflows), /route records the tier preference as the confirm-question default, /collate runs the evidence-graded collation pipeline (dual-track corroboration, P0/P1 full check, flashx P2 sampling) with a ledger.",
   "description_i18n": {
     "en": "Parallel dispatch, route preference and cluster collation: four-dimension scoring recommends a channel (FlashX batches / Flash pool / heavy doubles / dynamic workflows), /route records the tier preference as the confirm-question default, /collate runs the evidence-graded collation pipeline (P0/P1 full check, dual-track corroboration for P2, flashx P2 sampling) with a ledger.",
